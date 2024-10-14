@@ -19,13 +19,34 @@ const FarmerProfile = () => {
         district: "", // Editable
         state: "", // Editable
         country: "", // Editable
-        pin: "", // Editable
-        documents: {
-            aadharScan: "",
-            voterScan: "",
-            farmerPhoto: ""
-        }
+        pin: "" // Editable
     });
+
+    const [documents, setDocuments] = useState({
+        aadharScan: null,
+        voterScan: null,
+        farmerPhoto: null,
+    });
+
+    const [isLoading, setIsLoading] = useState(false);  // Loading state
+    const [saveSuccess, setSaveSuccess] = useState(false);  // Save success state
+
+     // Handle file change and preview
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    const file = files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setDocuments((prevDocs) => ({
+          ...prevDocs,
+          [name]: reader.result, // Store the base64 image for preview
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
 
     useEffect(() => {
         const farmerID = localStorage.getItem('farmerID'); // Retrieve farmerID from localStorage
@@ -37,18 +58,38 @@ const FarmerProfile = () => {
         }
     }, []);
     
-
+    
     const fetchFarmerProfile = async (farmerID) => {
         try {
             const response = await axios.get(`http://localhost:4000/register/fetch-profile/${farmerID}`);
             if (response.data.success) {
                 setFarmerProfile(response.data.data); // Set profile data in state
+    
+                // Extract address details correctly
+                const address = response.data.data.address || {};
+    
                 setProfile(prevProfile => ({
                     ...prevProfile,
                     farmerName: response.data.data.farmerName,
                     contactNumber: response.data.data.contactNumber,
                     aadharID: response.data.data.aadharID || "",
-                    voterID: response.data.data.voterID || ""
+                    voterID: response.data.data.voterID || "",
+                    landInAcres: response.data.data.landInAcres || "",
+                    landInBigha: response.data.data.landInBigha || "",
+                    distanceFromWaterSource: response.data.data.distanceFromWaterSource || "",
+                    // Access the address fields
+                    village: address.village || "",
+                    gramPanchayat: address.gramPanchayat || "",
+                    block: address.block || "",
+                    district: address.district || "",
+                    state: address.state || "",
+                    country: address.country || "",
+                    pin: address.pin || "",
+                    documents: {
+                        aadharScan: response.data.data.documents?.aadharScan || "",
+                        voterScan: response.data.data.documents?.voterScan || "",
+                        farmerPhoto: response.data.data.documents?.farmerPhoto || ""
+                    }
                 }));
             } else {
                 setErrorMessage(response.data.message);
@@ -58,28 +99,22 @@ const FarmerProfile = () => {
             setErrorMessage('Error fetching profile. Please try again later.');
         }
     };
+    
 
     const acresToBighas = (acres) => acres * 2.471;
     const bighasToAcres = (bighas) => bighas * 0.4047;
 
-
-    const handleFileChange = (e) => {
-      const { name, files: fileList } = e.target;
-      setFiles((prevFiles) => ({
-        ...prevFiles,
-        [name]: fileList,
-      }));
-    };
-    
-
     const handleSaveProfile = async () => {
-        
+        setIsLoading(true);  // Set loading to true when the process starts
+        setSaveSuccess(false); // Reset save success state before saving
+        setErrorMessage('');  // Clear any previous error messages
+    
         try {
             let farmerID = localStorage.getItem('farmerID');
     
             if (!farmerID) {
                 setErrorMessage('No farmer ID found in localStorage.');
-                console.log('No farmerID in localStorage.');
+                setIsLoading(false);  // Reset loading state
                 return;
             }
     
@@ -106,10 +141,10 @@ const FarmerProfile = () => {
     
             if (!primaryResponse.data.success) {
                 setErrorMessage('Failed to update address details.');
+                setIsLoading(false);  // Reset loading state if error occurs
                 return;
             }
-
-           
+    
             const formData = new FormData();
             formData.append('farmerID', farmerID);
             formData.append('landInAcres', profile.landInAcres || "");
@@ -117,7 +152,7 @@ const FarmerProfile = () => {
             formData.append('distanceFromWaterSource', profile.distanceFromWaterSource || "");
             formData.append('waterSourceType', profile.waterSourceType || "");
     
-            // Append file inputs
+            // Append file inputs if they exist
             if (files.aadharScan) {
                 formData.append('aadharScan', files.aadharScan[0]);
             }
@@ -127,30 +162,36 @@ const FarmerProfile = () => {
             if (files.farmerPhoto) {
                 formData.append('farmerPhoto', files.farmerPhoto[0]);
             }
-                
+    
             // Update secondary profile
             const secondaryResponse = await axios.post(
-                `http://localhost:4000/register/secondary-profile/${farmerID}`,
+                `https://ftplms.onrender.com/register/secondary-profile/${farmerID}`,
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );
     
             if (!secondaryResponse.data.success) {
                 setErrorMessage('Failed to update land details and documents.');
+                setIsLoading(false);  // Reset loading state if error occurs
                 return;
             }
     
+            // Successfully saved
             setErrorMessage('');
-            alert('Profile updated successfully!');
+            setSaveSuccess(true);  // Indicate successful save
+            alert('Profile updated successfully!');  // Optional alert
     
+            // Re-fetch the profile to show updated data
+            fetchFarmerProfile(farmerID);
         } catch (error) {
             console.error('Error saving profile data:', error.response ? error.response.data : error.message);
             setErrorMessage('Failed to update profile data. Please try again later.');
+        } finally {
+            setIsLoading(false);  // Reset loading state when operation is finished
         }
     };
-     
-
     
+
         return (
             <div style={{ background: 'rgb(99, 39, 120)', padding: '20px' }}>
                 <div className="container rounded bg-white mt-5 mb-5">
@@ -345,10 +386,12 @@ const FarmerProfile = () => {
                                 <div className="mb-3">
                                     <label className="labels">Upload Aadhaar Scan</label>
                                     <input type="file" className="form-control" name="aadharScan" onChange={handleFileChange} />
+                                    
                                 </div>
                                 <div className="mb-3">
                                     <label className="labels">Upload Voter Scan</label>
                                     <input type="file" className="form-control" name="voterScan" onChange={handleFileChange} />
+                                    
                                 </div>
                                 <div className="mb-3">
                                     <label className="labels">Upload Farmer Photo</label>
@@ -360,9 +403,13 @@ const FarmerProfile = () => {
     
                     {/* Move Save Profile button below Document Upload section */}
                     <div style={{ marginBottom: '40px' }} className="mt-4 text-center">
-                    <button className="btn btn-primary profile-button" onClick={handleSaveProfile}>
-                        Save Profile
-                    </button>
+                    <button
+                        className="btn btn-primary"
+                        onClick={handleSaveProfile}
+                        disabled={isLoading}
+                        >
+                        {isLoading ? "Saving Profile..." : saveSuccess ? "Profile Saved" : "Save Profile"}
+                        </button>
                     </div>
     
                     {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}

@@ -99,18 +99,30 @@ router.post('/reset-password', async (req, res) => {
 router.post('/send-otp', async (req, res) => {
   const { contactNumber } = req.body;
 
+  // Validate contact number
+  if (!/^\+\d{10,15}$/.test(contactNumber)) {
+    return res.status(400).json({ success: false, message: 'Invalid phone number format' });
+  }
+
   try {
     // Generate OTP
-    const otp = generateOTP();
+    const otp = generateOTP(); // Example: Math.floor(100000 + Math.random() * 900000).toString()
 
-    // Store OTP in the database
-    const otpInstance = new OTP({ contactNumber, otp });
-    await otpInstance.save();
+    // Set OTP expiration time (e.g., 5 minutes)
+    const expirationTime = 5 * 60 * 1000;
+    const expiresAt = new Date(Date.now() + expirationTime);
+
+    // Store OTP in the database (upsert if it exists)
+    await OTP.findOneAndUpdate(
+      { contactNumber },
+      { otp, expiresAt },
+      { upsert: true, new: true }
+    );
 
     // Send OTP using Twilio
     await client.messages.create({
       body: `Your OTP is ${otp}`,
-      from: twilioPhoneNumber,
+      from: process.env.TWILIO_PHONE_NUMBER, // Twilio phone number from env
       to: contactNumber,
     });
 
@@ -122,10 +134,12 @@ router.post('/send-otp', async (req, res) => {
   }
 });
 
-// Verify OTP route
+
+// Route to verify OTP
 router.post('/verify-otp', async (req, res) => {
   const { contactNumber, otp } = req.body;
 
+  // Validate inputs
   if (!contactNumber || !otp) {
     return res.status(400).json({ success: false, message: 'Contact number and OTP are required' });
   }
@@ -137,24 +151,23 @@ router.post('/verify-otp', async (req, res) => {
       return res.status(400).json({ success: false, message: 'OTP not found or has expired' });
     }
 
-    // (Optional) Check for OTP expiration
-    // Assuming you have a expiresAt field in your OTP model
+    // Check if OTP has expired
     if (new Date() > otpEntry.expiresAt) {
       return res.status(400).json({ success: false, message: 'OTP has expired' });
     }
 
     // Verify OTP
     if (otpEntry.otp === String(otp)) {
-
       return res.status(200).json({ success: true, message: 'OTP verified successfully' });
     } else {
       return res.status(400).json({ success: false, message: 'Invalid OTP' });
     }
   } catch (error) {
     console.error('Error verifying OTP:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Error verifying OTP' });
   }
 });
+
 
 router.post('/primary', async (req, res) => {
   const { farmerName, contactNumber, aadharID, voterID, password } = req.body;
@@ -170,7 +183,7 @@ router.post('/primary', async (req, res) => {
   }
 
    // Validate password complexity
-   const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+   const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
    if (!passwordPattern.test(password)) {
      return res.status(400).json({
        message: 'Password must be at least 8 characters long and include at least one letter, one number, and one special character.'
@@ -216,19 +229,34 @@ router.get('/fetch-profile/:farmerID', async (req, res) => {
   const { farmerID } = req.params;
 
   try {
-    // Fetch the farmer profile using the farmerID
-    const farmerProfile = await Farmer.findOne({ farmerID });
-    if (!farmerProfile) {
-      return res.status(404).json({ success: false, message: 'Farmer not found.' });
-    }
+      // Fetch the primary farmer profile
+      const primaryProfile = await Farmer.findOne({ farmerID });  // Corrected to 'Farmer'
+      if (!primaryProfile) {
+          return res.status(404).json({ success: false, message: 'Primary profile not found.' });
+      }
 
-    // Send back the farmer profile data
-    res.status(200).json({ success: true, data: farmerProfile });
+      // Fetch the secondary farmer profile
+      const secondaryProfile = await FarmerSecondarySchema.findOne({ farmerID });  // Corrected to 'FarmerSecondary'
+      if (!secondaryProfile) {
+          return res.status(404).json({ success: false, message: 'Secondary profile not found.' });
+      }
+
+      // Combine both primary and secondary profiles into one object
+      const fullProfile = {
+          ...primaryProfile.toObject(),
+          ...secondaryProfile.toObject()
+      };
+
+      // Send the combined profile back
+      res.status(200).json({ success: true, data: fullProfile });
+
   } catch (error) {
-    console.error('Error fetching farmer profile:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+      console.error('Error fetching farmer profile:', error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
+
+
 
 //add address details to primary data
 router.put('/primary-profile/:farmerID', async (req, res) => {

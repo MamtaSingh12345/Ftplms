@@ -122,6 +122,8 @@ const handleSubmit = async () => {
   if (!otpVerified) newErrors.otp = 'OTP must be verified';
   if (!primaryData.aadharID && !primaryData.voterID) newErrors.aadharVoter = 'Either Aadhar or Voter ID is required';
   if (!primaryData.password) newErrors.password = 'Password is required';
+  else if (!validatePassword(primaryData.password)) newErrors.password = 'Password must be at least 8 characters long and include at least one letter, one number, and one special character';
+  
   if (primaryData.password !== primaryData.confirmPassword) newErrors.confirmPassword = 'Passwords must match';
 
   setErrors(newErrors);
@@ -161,6 +163,14 @@ const handleSubmit = async () => {
     }
   }
 };
+
+// Function to validate password strength
+const validatePassword = (password) => {
+  // Regex to check for at least 8 characters, at least 1 letter, 1 number, and 1 special character
+  const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+  return passwordPattern.test(password);
+};
+
 
 
 return (
