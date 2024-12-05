@@ -17,7 +17,7 @@ const ResetPassword = () => {
   // Function to send OTP
   const handleSendOtp = async () => {
     try {
-      const response = await axios.post('http://localhost:4000/register/send-otp', {
+      const response = await axios.post('https://ftplms.onrender.com/register/send-otp', {
         contactNumber,
       });
       if (response.data.success) {
@@ -40,7 +40,7 @@ const ResetPassword = () => {
     }
   
     try {
-      const response = await axios.post('http://localhost:4000/register/verify-otp', {
+      const response = await axios.post('https://ftplms.onrender.com/register/verify-otp', {
         contactNumber,
         otp,
       });

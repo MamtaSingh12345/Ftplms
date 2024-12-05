@@ -10,9 +10,6 @@ const FarmerProfile = () => {
         contactNumber: "", // Set this from the fetched data
         aadharID: "", // Editable
         voterID: "", // Editable
-        landInAcres: null,
-        landInBigha: null,
-        distanceFromWaterSource: null,
         village: "", // Editable
         gramPanchayat: "", // Editable
         block: "", // Editable
@@ -32,20 +29,20 @@ const FarmerProfile = () => {
     const [saveSuccess, setSaveSuccess] = useState(false);  // Save success state
 
      // Handle file change and preview
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    const file = files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setDocuments((prevDocs) => ({
-          ...prevDocs,
-          [name]: reader.result, // Store the base64 image for preview
-        }));
+     const handleFileChange = (e) => {
+        const { name, files } = e.target;
+        const file = files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setDocuments((prevDocs) => ({
+              ...prevDocs,
+              [name]: reader.result, // Store the base64 image for preview
+            }));
+          };
+          reader.readAsDataURL(file);
+        }
       };
-      reader.readAsDataURL(file);
-    }
-  };
 
 
     useEffect(() => {
@@ -74,9 +71,6 @@ const FarmerProfile = () => {
                     contactNumber: response.data.data.contactNumber,
                     aadharID: response.data.data.aadharID || "",
                     voterID: response.data.data.voterID || "",
-                    landInAcres: response.data.data.landInAcres || "",
-                    landInBigha: response.data.data.landInBigha || "",
-                    distanceFromWaterSource: response.data.data.distanceFromWaterSource || "",
                     // Access the address fields
                     village: address.village || "",
                     gramPanchayat: address.gramPanchayat || "",
@@ -100,10 +94,6 @@ const FarmerProfile = () => {
         }
     };
     
-
-    const acresToBighas = (acres) => acres * 2.471;
-    const bighasToAcres = (bighas) => bighas * 0.4047;
-
     const handleSaveProfile = async () => {
         setIsLoading(true);  // Set loading to true when the process starts
         setSaveSuccess(false); // Reset save success state before saving
@@ -147,11 +137,6 @@ const FarmerProfile = () => {
     
             const formData = new FormData();
             formData.append('farmerID', farmerID);
-            formData.append('landInAcres', profile.landInAcres || "");
-            formData.append('landInBigha', profile.landInBigha || "");
-            formData.append('distanceFromWaterSource', profile.distanceFromWaterSource || "");
-            formData.append('waterSourceType', profile.waterSourceType || "");
-    
             // Append file inputs if they exist
             if (files.aadharScan) {
                 formData.append('aadharScan', files.aadharScan[0]);
@@ -165,7 +150,7 @@ const FarmerProfile = () => {
     
             // Update secondary profile
             const secondaryResponse = await axios.post(
-                `https://ftplms.onrender.com/register/secondary-profile/${farmerID}`,
+                `http://localhost:4000/register/secondary-profile/${farmerID}`,
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );
@@ -237,71 +222,7 @@ const FarmerProfile = () => {
                                     </div>
                                 </div>
     
-                                {/* Distance from Water Source and Water Source Type */}
-                                <div className="row mt-3">
-                                    {/* Distance from Water Source */}
-                                    <div className="col-md-6">
-                                        <label className="labels">Distance From Water Source</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="enter distance from water source"
-                                            value={profile.distanceFromWaterSource || ''}
-                                            onChange={(e) => setProfile({ ...profile, distanceFromWaterSource: e.target.value })}
-                                        />
-                                    </div>
-
-                                    {/* Water Source Type */}
-                                    <div className="col-md-6">
-                                        <label className="labels">Water Source Type</label>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="enter water source type"
-                                            value={profile.waterSourceType || ''}
-                                            onChange={(e) => setProfile({ ...profile, waterSourceType: e.target.value })}
-                                        />
-                                    </div>
-                                </div>
-
-    
-                                {/* Land Size Row */}
-                                <div className="row mt-3">
-                                    <div className="col-md-6">
-                                        <label className="labels">Land Size (Acres)</label>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            placeholder="enter land size in acres"
-                                            value={profile.landInAcres || ''}
-                                            onChange={(e) => {
-                                                const acres = e.target.value;
-                                                setProfile({
-                                                    ...profile,
-                                                    landInAcres: acres,
-                                                    landInBigha: acresToBighas(acres)
-                                                });
-                                            }}
-                                        />
-                                    </div>
-                                    <div className="col-md-6">
-                                        <label className="labels">Land Size (Bigha)</label>
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            placeholder="enter land size in bigha"
-                                            value={profile.landInBigha || ''}
-                                            onChange={(e) => {
-                                                const bighas = e.target.value;
-                                                setProfile({
-                                                    ...profile,
-                                                    landInBigha: bighas,
-                                                    landInAcres: bighasToAcres(bighas)
-                                                });
-                                            }}
-                                        />
-                                    </div>
-                                </div>
+                                  
     
                                 {/* Address Details in Two Columns */}
                                 <div className="row mt-3">

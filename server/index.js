@@ -24,8 +24,8 @@ mongoose.connect(primaryDbURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-  .then(() => console.log('Primary database connected'))
-  .catch((err) => console.error('Primary DB connection error:', err));
+  .then(() => console.log('Database connected'))
+  .catch((err) => console.error('DB connection error:', err));
 
 // Use registration routes
 app.use('/register', registrationRoutes);

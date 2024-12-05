@@ -1,34 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-//import phoneImage from 'https://vectorified.com/images/call-or-text-icon-11.png'; // Phone image URL
 
 const MakeCallPage = () => {
-  // Inline styles for the component
-  const containerStyle = {
-    marginTop: '3rem',
+  const [phoneNumber, setPhoneNumber] = useState(''); // State for entered phone number
+
+  const handlePhoneNumberChange = (e) => {
+    setPhoneNumber(e.target.value);
   };
 
-  const cardStyle = {
-    padding: '2rem',
-    borderRadius: '0.5rem',
-    backgroundColor: '#f9f9f9',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-  };
-
-  const titleStyle = {
-    textAlign: 'center',
-    color: '#007bff',
-    marginBottom: '1.5rem',
+  const handleCallClick = () => {
+    if (phoneNumber) {
+      window.location.href = `tel:${phoneNumber}`;
+    } else {
+      alert('Please enter a valid phone number.');
+    }
   };
 
   return (
-    <Container style={containerStyle}>
-      <Card style={cardStyle}>
-        <Card.Title style={titleStyle}>Make a Call</Card.Title>
+    <Container style={{ marginTop: '3rem' }}>
+      <Card style={{
+        padding: '2rem',
+        borderRadius: '0.5rem',
+        backgroundColor: '#f9f9f9',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      }}>
+        <Card.Title style={{
+          textAlign: 'center',
+          color: '#007bff',
+          marginBottom: '1.5rem',
+        }}>
+          Make a Call
+        </Card.Title>
         <Row className="mb-3">
           <Col md="6" className="text-center">
-            <img src="https://vectorified.com/images/call-or-text-icon-11.png" alt="Phone" style={{ width: '100px', height: '100px' }} />
-            <h5 className="mt-3">Call Us: 123-456-7890</h5> {/* Replace with your actual phone number */}
+            <img
+              src="https://vectorified.com/images/call-or-text-icon-11.png"
+              alt="Phone"
+              style={{ width: '100px', height: '100px' }}
+            />
+            <h5 className="mt-3">
+              <a href="tel:6398169466" style={{ textDecoration: 'none', color: '#007bff' }}>
+                Call Us: 639-816-9466
+              </a>
+            </h5>
           </Col>
           <Col md="6">
             <div className="text-center">
@@ -38,8 +52,12 @@ const MakeCallPage = () => {
                   type="text"
                   className="form-control"
                   placeholder="Enter phone number"
+                  value={phoneNumber}
+                  onChange={handlePhoneNumberChange}
                 />
-                <button className="btn btn-primary" type="button">Call</button>
+                <button className="btn btn-primary" type="button" onClick={handleCallClick}>
+                  Call
+                </button>
               </div>
             </div>
           </Col>
