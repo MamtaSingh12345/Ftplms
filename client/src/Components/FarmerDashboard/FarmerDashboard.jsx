@@ -42,7 +42,7 @@ const FarmerDashboard = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
-            <Nav.Link as={Link} to="/dashboard">Dashboard</Nav.Link>
+            <Nav.Link as={Link} to="/farmer-dashboard">Dashboard</Nav.Link>
             <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
             <Nav.Link href="/social-details">Social and Family Details</Nav.Link>
             <Nav.Link href="/land-records">Land Records</Nav.Link>
@@ -51,7 +51,7 @@ const FarmerDashboard = () => {
               <NavDropdown.Item as={Link} to="/settings">Settings</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/help">Help</NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link as={Link} to="/logout">Logout</Nav.Link>
+            <Nav.Link as={Link} to="/">Logout</Nav.Link>
           </Nav>
           <div style={{ position: 'relative' }}>
             <Image
@@ -132,7 +132,18 @@ const FarmerDashboard = () => {
               </Card.Body>
             </Card>
           </Col>
+
+          <Col xs={12} md={6} lg={4}>
+            <Card>
+              <Card.Body>
+                <Card.Title style={cardTitleStyle}>Agro Advisory</Card.Title>
+                <Card.Text className="text-center">Send your problem and ask to the Agricuture experts.</Card.Text>
+                <Link to="/agro-advisory"><Button variant="primary" block>Get help</Button></Link>
+              </Card.Body>
+            </Card>
+          </Col>
         </Row>
+        
 
         
       </Container>
