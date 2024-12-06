@@ -42,7 +42,7 @@ const LandRecordsManagement = () => {
   useEffect(() => {
     if (farmerID) {
       axios
-        .get(`http://localhost:4000/register/land-details/${farmerID}`)
+        .get(`https://ftplms.onrender.com/register/land-details/${farmerID}`)
         .then((response) => {
           if (response.data && response.data.landDetails) {
             setLands(response.data.landDetails);
@@ -77,8 +77,8 @@ const LandRecordsManagement = () => {
 
       const response = await axios.post(
         isEditing
-          ? `http://localhost:4000/register/land-details` // Update existing land
-          : "http://localhost:4000/register/land-details", // Add new land
+          ? `https://ftplms.onrender.com/register/land-details` // Update existing land
+          : "https://ftplms.onrender.com/register/land-details", // Add new land
         payload
       );
 
@@ -112,7 +112,7 @@ const LandRecordsManagement = () => {
     try {
         // Send DELETE request to the server with farmerID and landId
         const response = await axios.delete(
-            'http://localhost:4000/register/land-details', 
+            'https://ftplms.onrender.com/register/land-details', 
             { data: { farmerID, landId } }
         );
 

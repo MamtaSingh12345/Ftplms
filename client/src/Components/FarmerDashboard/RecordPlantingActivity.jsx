@@ -103,7 +103,7 @@ const RecordPlantationPlan = () => {
     data.append('farmerID', farmerID);
 
     try {
-      const response = await axios.post('http://localhost:4000/register/record-plantation-plan', data);
+      const response = await axios.post('https://ftplms.onrender.com/register/record-plantation-plan', data);
       alert(response.data.message);
     } catch (error) {
       console.error('Error recording plantation plan:', error);
@@ -128,7 +128,7 @@ const RecordPlantationPlan = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/register/record-tree-planted",
+        "https://ftplms.onrender.com/register/record-tree-planted",
         data
       );
       alert(response.data.message);

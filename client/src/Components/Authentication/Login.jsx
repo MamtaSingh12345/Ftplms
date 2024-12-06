@@ -16,7 +16,7 @@ const Login = () => {
     setLoading(true); // Set loading to true when login starts
 
     try {
-      const response = await axios.post('http://localhost:4000/register/login', {
+      const response = await axios.post('https://ftplms.onrender.com/register/login', {
         contactNumber,
         password,
       });

@@ -64,7 +64,7 @@ const ResetPassword = () => {
     setSuccessMessage(''); // Clear previous success messages
   
     try {
-      const response = await axios.post('http://localhost:4000/register/reset-password', {
+      const response = await axios.post('https://ftplms.onrender.com/register/reset-password', {
         contactNumber,
         newPassword,
         confirmPassword,

@@ -52,7 +52,7 @@ const AgroAdvisoryPage = () => {
   
     setErrors({});
     try {
-      const response = await axios.post('http://localhost:4000/register/send-advisory', {
+      const response = await axios.post('https://ftplms.onrender.com/register/send-advisory', {
         name,
         email,
         phone,   // Add phone to the email body content

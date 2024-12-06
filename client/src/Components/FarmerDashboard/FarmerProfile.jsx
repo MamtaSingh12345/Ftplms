@@ -58,7 +58,7 @@ const FarmerProfile = () => {
     
     const fetchFarmerProfile = async (farmerID) => {
         try {
-            const response = await axios.get(`http://localhost:4000/register/fetch-profile/${farmerID}`);
+            const response = await axios.get(`https://ftplms.onrender.com/register/fetch-profile/${farmerID}`);
             if (response.data.success) {
                 setFarmerProfile(response.data.data); // Set profile data in state
     
@@ -125,7 +125,7 @@ const FarmerProfile = () => {
     
             // Update primary profile
             const primaryResponse = await axios.put(
-                `http://localhost:4000/register/primary-profile/${farmerID}`,
+                `https://ftplms.onrender.com/register/primary-profile/${farmerID}`,
                 addressDetails
             );
     
@@ -150,7 +150,7 @@ const FarmerProfile = () => {
     
             // Update secondary profile
             const secondaryResponse = await axios.post(
-                `http://localhost:4000/register/secondary-profile/${farmerID}`,
+                `https://ftplms.onrender.com/register/secondary-profile/${farmerID}`,
                 formData,
                 { headers: { 'Content-Type': 'multipart/form-data' } }
             );

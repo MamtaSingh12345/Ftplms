@@ -61,7 +61,7 @@ const RegisterFarmerForm = () => {
   // Function to send OTP
 const handleSendOTP = async () => {
   try {
-    const response = await axios.post('http://localhost:4000/register/send-otp', {
+    const response = await axios.post('https://ftplms.onrender.com/register/send-otp', {
       contactNumber: primaryData.contactNumber,
     });
     if (response.data.success) {
@@ -88,7 +88,7 @@ const handleVerifyOTP = async () => {
   }
 
   try {
-    const response = await axios.post('http://localhost:4000/register/verify-otp', {
+    const response = await axios.post('https://ftplms.onrender.com/register/verify-otp', {
       contactNumber: primaryData.contactNumber,
       otp,
     });
@@ -137,7 +137,7 @@ const handleSubmit = async () => {
     };
 
     try {
-      const response = await fetch('http://localhost:4000/register/primary', {
+      const response = await fetch('https://ftplms.onrender.com/register/primary', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -25,7 +25,7 @@ const SocialAndFamilyDetails = () => {
         }
 
         const response = await axios.get(
-          `http://localhost:4000/register/get-social-info/${farmerID}`
+          `https://ftplms.onrender.com/register/get-social-info/${farmerID}`
         );
 
         if (response.data.socialInformation) {
@@ -68,7 +68,7 @@ const SocialAndFamilyDetails = () => {
 
       const payload = { ...socialInfo, farmerID };
       const response = await axios.post(
-        "http://localhost:4000/register/update-social-info",
+        "https://ftplms.onrender.com/register/update-social-info",
         payload
       );
 

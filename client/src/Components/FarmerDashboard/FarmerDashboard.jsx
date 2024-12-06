@@ -38,7 +38,7 @@ const FarmerDashboard = () => {
   return (
     <>
       <Navbar bg="dark" variant="dark" expand="lg">
-        <Navbar.Brand as={Link} to="/">Farmer's Portal</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/farmer-dashboard">Farmer's Portal</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
@@ -134,16 +134,16 @@ const FarmerDashboard = () => {
           </Col>
 
           <Col xs={12} md={6} lg={4}>
-            <Card>
-              <Card.Body>
-                <Card.Title style={cardTitleStyle}>Agro Advisory</Card.Title>
-                <Card.Text className="text-center">Send your problem and ask to the Agricuture experts.</Card.Text>
-                <Link to="/agro-advisory"><Button variant="primary" block>Get help</Button></Link>
-              </Card.Body>
-            </Card>
-          </Col>
+          <Card>
+            <Card.Body>
+              <Card.Title style={cardTitleStyle}>Agro Advisory</Card.Title>
+              <Card.Text className="text-center">Send your problem and ask the Agriculture experts.</Card.Text>
+              <Link to="/agro-advisory"><Button variant="info" block>Get Help</Button></Link>
+            </Card.Body>
+          </Card>
+        </Col>
+          
         </Row>
-        
 
         
       </Container>
